@@ -1,25 +1,23 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
 import { Video } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
-export const Route = createFileRoute("/_authenticated/app")({
-  head: () => ({
-    meta: [
-      { title: "Dashboard — Video Speed Reader" },
-      { name: "description", content: "Your Video Speed Reader dashboard." },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
-  component: AppPage,
-});
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
+import { usePageMeta } from "@/hooks/use-page-meta";
 
-function AppPage() {
-  const { user } = Route.useRouteContext();
+export default function AppPage() {
+  usePageMeta({
+    title: "Dashboard — Video Speed Reader",
+    description: "Your Video Speed Reader dashboard.",
+    robots: "noindex",
+  });
+
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   async function handleSignOut() {
     await supabase.auth.signOut();
-    navigate({ to: "/", replace: true });
+    navigate("/", { replace: true });
   }
 
   return (
@@ -39,7 +37,7 @@ function AppPage() {
       </header>
 
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 py-16">
-        <h1 className="text-3xl font-bold tracking-tight">Hi {user.email}</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Hi {user?.email}</h1>
 
         <div className="mt-10 flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 px-8 py-20 text-center">
           <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-accent">

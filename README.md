@@ -10,11 +10,11 @@ The site must include:
 
    - Features section with exactly 3 feature cards:
 
-     * Card 1: "High-accuracy transcripts" — powered by OpenAI Whisper
+     - Card 1: "High-accuracy transcripts" — powered by OpenAI Whisper
 
-     * Card 2: Three-minute turnaround" — processed in the background, you get an email when it's ready
+     - Card 2: Three-minute turnaround" — processed in the background, you get an email when it's ready
 
-     * Card 3: "Commercial-use ready)" — you own the output, use it however you like
+     - Card 3: "Commercial-use ready)" — you own the output, use it however you like
 
    - Footer with copyright "© 2026 Video Speed Reader"
 
@@ -67,4 +67,46 @@ git clone <this-repository-url>
 cd <repository-name>
 npm i
 npm run dev
+```
+
+## Architecture
+
+This project is a **plain Vite + React single-page app**, built as static assets
+and hosted on Vercel. There is no SSR, no server runtime, and no Cloudflare /
+Wrangler configuration.
+
+- **Routing** — [React Router](https://reactrouter.com) (client-side only):
+
+  | Path       | Page                                     |
+  | ---------- | ---------------------------------------- |
+  | `/`        | Landing page                             |
+  | `/auth`    | Sign in / sign up (toggle)               |
+  | `/sign-in` | Sign in (toggle preset)                  |
+  | `/sign-up` | Sign up (toggle preset)                  |
+  | `/app`     | Dashboard — requires a signed-in session |
+  | `*`        | 404                                      |
+
+- **Auth** — Supabase, entirely in the browser. `AuthProvider` in
+  `src/lib/auth.tsx` resolves the session; `RequireAuth` guards `/app` and
+  redirects to `/auth` when there is no user.
+- **Build** — `vite build` emits static files to `dist/`.
+- **Deep links** — `vercel.json` rewrites non-asset paths to `/index.html`, so
+  loading `/app` directly is resolved client-side by the router.
+
+### Environment variables
+
+The Supabase values are inlined at build time and must be present in the build
+environment (Vercel → Project → Settings → Environment Variables):
+
+```
+VITE_SUPABASE_URL
+VITE_SUPABASE_PUBLISHABLE_KEY
+```
+
+### Deployment
+
+```sh
+npm install
+npm run build     # -> dist/
+npm run preview   # serve the built output locally
 ```

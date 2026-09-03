@@ -1,27 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { Zap, FileText, BadgeCheck } from "lucide-react";
-import { useReveal } from "@/hooks/use-reveal";
+import { Link } from "react-router-dom";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Video Speed Reader — Video to Transcript in 3 Minutes" },
-      {
-        name: "description",
-        content:
-          "Upload your video, get a clean, high-accuracy transcript in three minutes. Repurpose long-form video into blog posts, course notes, and searchable archives.",
-      },
-      { property: "og:title", content: "Video Speed Reader" },
-      {
-        property: "og:description",
-        content: "Upload your video, get a clean transcript in three minutes.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
-  component: LandingPage,
-});
+import { useReveal } from "@/hooks/use-reveal";
+import { usePageMeta } from "@/hooks/use-page-meta";
 
 const features = [
   {
@@ -44,7 +25,13 @@ const features = [
   },
 ];
 
-function LandingPage() {
+export default function LandingPage() {
+  usePageMeta({
+    title: "Video Speed Reader — Video to Transcript in 3 Minutes",
+    description:
+      "Upload your video, get a clean, high-accuracy transcript in three minutes. Repurpose long-form video into blog posts, course notes, and searchable archives.",
+  });
+
   const featuresRef = useReveal<HTMLElement>();
 
   return (
@@ -52,9 +39,7 @@ function LandingPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <span className="text-base font-bold tracking-tight">
-            Video Speed Reader
-          </span>
+          <span className="text-base font-bold tracking-tight">Video Speed Reader</span>
           <Link
             to="/auth"
             className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition hover:bg-primary/90"

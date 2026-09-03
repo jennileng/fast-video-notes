@@ -1,26 +1,28 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 import { supabase } from "@/integrations/supabase/client";
+import { usePageMeta } from "@/hooks/use-page-meta";
 
-export const Route = createFileRoute("/auth")({
-  head: () => ({
-    meta: [
-      { title: "Sign in — Video Speed Reader" },
-      { name: "description", content: "Sign in or create your Video Speed Reader account." },
-      { property: "og:title", content: "Sign in — Video Speed Reader" },
-      { property: "og:description", content: "Sign in or create your account." },
-    ],
-  }),
-  component: AuthPage,
-});
+type AuthMode = "signin" | "signup";
 
-function AuthPage() {
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+export default function AuthPage({ initialMode = "signin" }: { initialMode?: AuthMode }) {
+  usePageMeta({
+    title: "Sign in — Video Speed Reader",
+    description: "Sign in or create your Video Speed Reader account.",
+  });
+
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Keep the toggle in sync when navigating between /sign-in and /sign-up.
+  useEffect(() => {
+    setMode(initialMode);
+  }, [initialMode]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -38,7 +40,7 @@ function AuthPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
-      navigate({ to: "/app" });
+      navigate("/app");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {

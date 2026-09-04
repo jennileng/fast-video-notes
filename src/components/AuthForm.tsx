@@ -1,46 +1,40 @@
-import { useEffect, useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+"use client";
 
-import { supabase } from "@/integrations/supabase/client";
-import { usePageMeta } from "@/hooks/use-page-meta";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, type FormEvent } from "react";
+
+import { createClient } from "@/lib/supabase/client";
 
 type AuthMode = "signin" | "signup";
 
-export default function AuthPage({ initialMode = "signin" }: { initialMode?: AuthMode }) {
-  usePageMeta({
-    title: "Sign in — Video Speed Reader",
-    description: "Sign in or create your Video Speed Reader account.",
-  });
-
+export default function AuthForm({ initialMode = "signin" }: { initialMode?: AuthMode }) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
-  // Keep the toggle in sync when navigating between /sign-in and /sign-up.
-  useEffect(() => {
-    setMode(initialMode);
-  }, [initialMode]);
+  const router = useRouter();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    const supabase = createClient();
     try {
       if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin },
+          options: { emailRedirectTo: `${window.location.origin}/app` },
         });
         if (error) throw error;
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
-      navigate("/app");
+      router.push("/app");
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -52,7 +46,7 @@ export default function AuthPage({ initialMode = "signin" }: { initialMode?: Aut
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <header className="border-b border-border/60">
         <div className="mx-auto flex h-16 max-w-6xl items-center px-6">
-          <Link to="/" className="text-base font-bold tracking-tight">
+          <Link href="/" className="text-base font-bold tracking-tight">
             Video Speed Reader
           </Link>
         </div>
@@ -60,7 +54,6 @@ export default function AuthPage({ initialMode = "signin" }: { initialMode?: Aut
 
       <main className="flex flex-1 items-center justify-center px-6 py-16">
         <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-2xl shadow-primary/5">
-          {/* Mode toggle */}
           <div className="mb-8 grid grid-cols-2 gap-1 rounded-lg bg-muted p-1">
             <button
               type="button"

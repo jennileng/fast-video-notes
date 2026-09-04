@@ -1,8 +1,9 @@
+"use client";
+
 import { Zap, FileText, BadgeCheck } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 import { useReveal } from "@/hooks/use-reveal";
-import { usePageMeta } from "@/hooks/use-page-meta";
 
 const features = [
   {
@@ -26,12 +27,6 @@ const features = [
 ];
 
 export default function LandingPage() {
-  usePageMeta({
-    title: "Video Speed Reader — Video to Transcript in 3 Minutes",
-    description:
-      "Upload your video, get a clean, high-accuracy transcript in three minutes. Repurpose long-form video into blog posts, course notes, and searchable archives.",
-  });
-
   const featuresRef = useReveal<HTMLElement>();
 
   return (
@@ -41,7 +36,7 @@ export default function LandingPage() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <span className="text-base font-bold tracking-tight">Video Speed Reader</span>
           <Link
-            to="/auth"
+            href="/sign-in"
             className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition hover:bg-primary/90"
           >
             Sign in
@@ -53,7 +48,7 @@ export default function LandingPage() {
       <section className="hero-glow relative overflow-hidden">
         <div className="mx-auto max-w-6xl px-6 pb-24 pt-24 text-center sm:pt-32">
           <p className="mx-auto mb-6 inline-block rounded-full border border-primary/30 bg-accent px-4 py-1.5 text-xs font-medium text-accent-foreground">
-            For creators, educators & engineers
+            For creators, educators &amp; engineers
           </p>
           <h1 className="mx-auto max-w-3xl text-4xl font-extrabold tracking-tight sm:text-6xl">
             Video Speed Reader
@@ -63,7 +58,7 @@ export default function LandingPage() {
           </p>
           <div className="mt-10 flex items-center justify-center gap-4">
             <Link
-              to="/auth"
+              href="/sign-in"
               className="rounded-lg bg-primary px-8 py-3 text-base font-semibold text-primary-foreground shadow-xl shadow-primary/30 transition hover:bg-primary/90"
             >
               Get started
